@@ -20,4 +20,10 @@ Calling:
 -  To get a List of free Timeslots you must write the logic the other way around
    - Create a List of all possible Timeslots and cancel out the occupied spaces
 
+## Used Permissions
+|Permission|Type|
+|--|--|
+|Bookings.Read.All|Application|
+|BookingsAppointment.ReadWrite.All|Application|
+
 ##### :construction::construction: Ignore null warnings it's only a PoC :construction::construction:

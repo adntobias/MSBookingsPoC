@@ -258,8 +258,50 @@ foreach (var timeSlot in availableTimeSlots)
     System.Console.WriteLine($"     🕒: {timeSlot.StartTime.ToShortTimeString()} - {timeSlot.EndTime.ToShortTimeString()}");
 }
 
-// Create a new appointment for booking (Not implemented in the provided code)
+// Create a new appointment for booking 
 //business createAppointment
+Random random = new Random();
+TimeSlot randomTime = availableTimeSlots[random.Next(availableTimeSlots.Count)];
+var appointmentRequestBody = new BookingAppointment
+{
+	OdataType = "#microsoft.graph.bookingAppointment",
+	ServiceId = itSupportServiceId,
+	ServiceName = "IT Service",
+	ServiceNotes = "Customer requires punctual service.",
+	StaffMemberIds = itServiceStaffIdsList,
+	StartDateTime = new DateTimeTimeZone
+	{
+		OdataType = "#microsoft.graph.dateTimeTimeZone",
+		DateTime = randomTime.StartTime.ToString("yyyy-MM-ddTHH:mm:ss.fffffffK"),
+		TimeZone = "UTC",
+	},
+    EndDateTime = new DateTimeTimeZone
+	{
+		OdataType = "#microsoft.graph.dateTimeTimeZone",
+		DateTime =  randomTime.EndTime.ToString("yyyy-MM-ddTHH:mm:ss.fffffffK"),
+		TimeZone = "UTC",
+	},
+	MaximumAttendeesCount = 5,
+	Customers = new List<BookingCustomerInformationBase>
+	{
+		new BookingCustomerInformation
+		{
+			OdataType = "#microsoft.graph.bookingCustomerInformation",
+			CustomerId = knownCustomer.Id,
+			Name = knownCustomer.DisplayName,
+			EmailAddress = knownCustomer.EmailAddress
+		},
+	},
+    IsLocationOnline = true,
+	Price = 10d,
+	PriceType = BookingPriceType.FixedPrice
+};
+
+var createAppointment = await graphClient.Solutions.BookingBusinesses[bID].Appointments.PostAsync(appointmentRequestBody);
+if(createAppointment is not null){
+    System.Console.WriteLine($"Your Appointment ID: {createAppointment.Id}");
+}
+
 
 // Method to calculate and return available time slots
 static List<TimeSlot> GetAvailableTimeSlots(DateTime startTime, DateTime endTime, TimeSpan duration, List<Appointment> plannedAppointments)
